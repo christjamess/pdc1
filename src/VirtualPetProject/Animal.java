@@ -4,109 +4,103 @@
  */
 package VirtualPetProject;
 
-import java.io.Serializable;
-
 /**
  *
  * @author madis
  */
 
-public abstract class Animal implements Serializable {
-    
-    protected String petName;
+public abstract class Animal {
+
+    private String name;
     private int hunger;
-    private int social;
-    private int bladder;
-    private int hygiene;
     private int energy;
     private int fun;
-    
-    
-    public Animal(){
+    private int hygiene;
+    private int bladder;
+    private int social;
+
+    public Animal(String name) {
+        this.name = name;
         this.hunger = 50;
-        this.social = 50;
-        this.bladder = 50;
-        this.hygiene = 50;
         this.energy = 50;
         this.fun = 50;
-    }
-    
-    public Animal(String petName) {
-        this();
-        this.petName = petName;
-    }
-    
-    // Getters and Setters
-    public String getPetName() {
-        return petName;
+        this.hygiene = 50;
+        this.bladder = 50;
+        this.social = 50;
     }
 
-    public void setPetName(String petName) {
-        this.petName = petName;
+    public String getName() {
+        return name;
     }
 
     public int getHunger() {
         return hunger;
     }
 
-    public void setHunger(int hunger) {
-        this.hunger = Math.max(0, Math.min(hunger, 100));
-    }
-
-    public int getSocial() {
-        return social;
-    }
-
-    public void setSocial(int social) {
-        this.social = Math.max(0, Math.min(social, 100));
-    }
-
-    public int getBladder() {
-        return bladder;
-    }
-
-    public void setBladder(int bladder) {
-        this.bladder = Math.max(0, Math.min(bladder, 100));
-    }
-
-    public int getHygiene() {
-        return hygiene;
-    }
-
-    public void setHygiene(int hygiene) {
-        this.hygiene = Math.max(0, Math.min(hygiene, 100));
-    }
-
     public int getEnergy() {
         return energy;
-    }
-
-    public void setEnergy(int energy) {
-        this.energy = Math.max(0, Math.min(energy, 100));
     }
 
     public int getFun() {
         return fun;
     }
 
-    public void setFun(int fun) {
-        this.fun = Math.max(0, Math.min(fun, 100));
+    public int getHygiene() {
+        return hygiene;
     }
-    
-    public abstract void displayNeeds();
-    
-    public abstract void fulfillNeed(int need);
-    
+
+    public int getBladder() {
+        return bladder;
+    }
+
+    public int getSocial() {
+        return social;
+    }
+
+    public void setHunger(int hunger) {
+        this.hunger = hunger;
+    }
+
+    public void setEnergy(int energy) {
+        this.energy = energy;
+    }
+
+    public void setFun(int fun) {
+        this.fun = fun;
+    }
+
+    public void setHygiene(int hygiene) {
+        this.hygiene = hygiene;
+    }
+
+    public void setBladder(int bladder) {
+        this.bladder = bladder;
+    }
+
+    public void setSocial(int social) {
+        this.social = social;
+    }
+
+    public void setAttributes(int hunger, int energy, int fun, int hygiene, int bladder, int social) {
+        this.hunger = hunger;
+        this.energy = energy;
+        this.fun = fun;
+        this.hygiene = hygiene;
+        this.bladder = bladder;
+        this.social = social;
+    }
+
+    // Abstract methods for fulfilling needs to be implemented by subclasses
     public abstract void fulfillHunger();
 
-    public abstract void fulfillSocial();
-    
-    public abstract void fulfillBladder();
-    
-    public abstract void fulfillHygiene();
-    
     public abstract void fulfillEnergy();
-    
+
     public abstract void fulfillFun();
-    
+
+    public abstract void fulfillHygiene();
+
+    public abstract void fulfillBladder();
+
+    public abstract void fulfillSocial();
 }
+
