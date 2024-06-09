@@ -14,115 +14,135 @@ import java.util.Scanner;
  * @author madis
  */
 public class UserInterface {
+    private static Scanner scanner = new Scanner(System.in);
+    private PetInteraction petInteraction = new PetInteraction();
 
-    private static final Scanner scanner = new Scanner(System.in);
+    public void start() {
+        boolean exit = false;
+        while (!exit) {
+            System.out.println("1. Create Pet");
+            System.out.println("2. Load Pet");
+            System.out.println("3. Exit");
+            System.out.print("Choose an option: ");
+            int choice = getUserIntChoice();
 
-    public static void displayWelcomeMessage() {
-        System.out.println("Welcome to V-Pet!");
-    }
-
-    public static char getMainMenuChoice() {
-        System.out.println("\nWould you like to:");
-        System.out.println("1. Create a new pet");
-        System.out.println("2. Load a saved pet");
-        System.out.println("3. Exit");
-        return scanner.next().charAt(0);
-    }
-
-    public static void displayInvalidChoiceMessage() {
-        System.out.println("Invalid choice. Please try again.");
-    }
-
-    public static int selectPet() {
-        int pet;
-        System.out.println("Select your animal below:");
-        System.out.println("1. Cat\n2. Dog\n3. Rabbit\n4. Hamster\n5. Horse");
-        while (true) {
-            try {
-                pet = scanner.nextInt();
-                if (pet < 1 || pet > 5) {
-                    System.out.println("Invalid pet selection. Please try again:");
-                } else {
+            switch (choice) {
+                case 1:
+                    createPet();
                     break;
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a number.");
-                scanner.nextLine();
+                case 2:
+//                    loadPet();
+                    break;
+                case 3:
+                    exit = true;
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
             }
         }
-        return pet;
     }
 
-    public static String getPetName() {
-        System.out.println("Say hello to your new friend! What would you like to name them?");
-        scanner.nextLine();
-        return scanner.nextLine();
-    }
+    private void createPet() {
+        System.out.print("Enter pet name: ");
+        String name = scanner.nextLine();
+        System.out.println("Select pet type:");
+        System.out.println("1. Dog");
+        System.out.println("2. Cat");
+        System.out.print("Choose an option: ");
+        int choice = getUserIntChoice();
 
-    public static void displayMessage(String message) {
-        System.out.println(message);
-    }
-
-    public static void displaySavedPetsList(Map<String, Animal> petMap) {
-        System.out.println("Choose a pet to load:");
-        int index = 1;
-        for (String petName : petMap.keySet()) {
-            System.out.println(index + ". " + petName);
-            index++;
+        Animal pet;
+        switch (choice) {
+            case 1:
+                pet = new Dog(name);
+                break;
+            case 2:
+                pet = new Cat(name);
+                break;
+            default:
+                System.out.println("Invalid pet type.");
+                return;
         }
+
+//        DatabaseSetup.saveNewPet(pet);
+//        System.out.println("New pet created and saved: " + name);
     }
 
-    public static int selectSavedPet(Map<String, Animal> petMap) {
-        int petIndex;
-        while (true) {
-            try {
-                petIndex = scanner.nextInt() - 1; 
-                if (petIndex < 0 || petIndex >= petMap.size()) {
-                    System.out.println("Invalid pet selection. Please try again:");
-                } else {
+//    private void loadPet() {
+//        List<Animal> pets = DatabaseSetup.loadExistingPets();
+//        if (pets.isEmpty()) {
+//            System.out.println("No pets found in the database.");
+//            return;
+//        }
+//
+//        System.out.println("Select a pet to load:");
+//        for (int i = 0; i < pets.size(); i++) {
+//            System.out.println((i + 1) + ". " + pets.get(i).getName());
+//        }
+//        System.out.print("Enter the number of the pet you want to load: ");
+//        int choice = getUserIntChoice();
+//
+//        if (choice < 1 || choice > pets.size()) {
+//            System.out.println("Invalid choice.");
+//            return;
+//        }
+//
+//        Animal pet = pets.get(choice - 1);
+//        interactWithPet(pet);
+//    }
+
+    private void interactWithPet(Animal pet) {
+        boolean exit = false;
+        while (!exit) {
+            System.out.println("Interacting with " + pet.getName());
+            System.out.println("1. Fulfill Hunger");
+            System.out.println("2. Fulfill Social");
+            System.out.println("3. Fulfill Bladder");
+            System.out.println("4. Fulfill Hygiene");
+            System.out.println("5. Fulfill Energy");
+            System.out.println("6. Fulfill Fun");
+            System.out.println("7. Exit");
+            System.out.print("Choose an option: ");
+            int choice = getUserIntChoice();
+
+            switch (choice) {
+                case 1:
+                    petInteraction.fulfillNeed(pet, '1');
                     break;
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a number.");
-                scanner.nextLine();
+                case 2:
+                    petInteraction.fulfillNeed(pet, '2');
+                    break;
+                case 3:
+                    petInteraction.fulfillNeed(pet, '3');
+                    break;
+                case 4:
+                    petInteraction.fulfillNeed(pet, '4');
+                    break;
+                case 5:
+                    petInteraction.fulfillNeed(pet, '5');
+                    break;
+                case 6:
+                    petInteraction.fulfillNeed(pet, '6');
+                    break;
+                case 7:
+                    exit = true;
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
             }
         }
-        return petIndex;
     }
 
-    public static char getUserChoice() {
-        return scanner.next().charAt(0);
-    }
-
-    public static char getNeedChoice() {
-        System.out.println("Select a need to fulfill or press 'n' to create a new pet:\nSelect 'x' to exit.");
-        System.out.println("1. Hunger\n2. Social\n3. Bladder\n4. Hygiene\n5. Energy\n6. Fun");
-        return scanner.next().charAt(0);
-    }
-
-
-    public static void displaySavedPetsBeforeExit() {
-        System.out.println("\nThank you for playing!\nView Your Pets before you go:");
-        FileHandler.displayPetRegistryFromFile();
-    }
-    
-    public static void displayExitMenu() {
-        System.out.println("Exiting V-Pet. Goodbye!");
-        System.exit(0);
-    }
-    
     public static int getUserIntChoice() {
+        int choice;
         try {
-            return scanner.nextInt();
+            choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
         } catch (InputMismatchException e) {
-            scanner.nextLine();
-            System.out.println("Invalid input. Please enter a valid integer.");
-            return getUserIntChoice();
+            System.out.println("Invalid input. Please enter a number.");
+            scanner.nextLine(); // Clear invalid input
+            choice = -1;
         }
+        return choice;
     }
-    
-    public static void closeScanner() {
-        scanner.close();
-    }
-
 }
