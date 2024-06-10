@@ -1,71 +1,79 @@
 package VirtualPetProject;
- 
-/**
-*
-* @author madis
-*/
- 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
- 
-public class MainMenuGui {
-    private JComboBox<String> animalDropdown;
-    private List<Animal> animalList;
- 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new MainMenuGui().createAndShowGUI());
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class MainMenuGui extends JFrame {
+    public MainMenuGui() {
+        setTitle("Virtual Pet Project");
+        setSize(400, 300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        createAndShowGUI();
     }
- 
+
     private void createAndShowGUI() {
-        JFrame frame = new JFrame("Virtual Pet Project");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
- 
-        JPanel panel = new JPanel();
-        animalDropdown = new JComboBox<>();
-        loadAnimals();
- 
-        JButton loadAnimalButton = new JButton("Load Selected Animal");
-        loadAnimalButton.addActionListener(new ActionListener() {
+        JPanel panel = new JPanel(new BorderLayout());
+
+        // Create a button to load animals
+        JButton loadAnimalsButton = new JButton("Load Animals");
+        loadAnimalsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selectedAnimal = (String) animalDropdown.getSelectedItem();
-                if (selectedAnimal != null) {
-                    loadAnimal(selectedAnimal);
+                try {
+                    loadAnimals();
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Failed to load animals: " + ex.getMessage(),
+                            "Database Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
- 
-        panel.add(animalDropdown);
-        panel.add(loadAnimalButton);
-        frame.add(panel);
-        frame.setVisible(true);
+
+        panel.add(loadAnimalsButton, BorderLayout.CENTER);
+        add(panel);
     }
- 
-    private void loadAnimals() {
-        animalList = DatabaseSetup.loadExistingPets();
-        animalDropdown.removeAllItems();
-        for (Animal animal : animalList) {
-            animalDropdown.addItem(animal.getName());
-        }
-    }
- 
-    private void loadAnimal(String animalName) {
-        Animal selectedAnimal = null;
- 
-        for (Animal animal : animalList) {
-            if (animal.getName().equals(animalName)) {
-                selectedAnimal = animal;
-                break;
+
+    private void loadAnimals() throws SQLException {
+        // Ensure the database connection is established
+        Statement statement = DatabaseSetup.getStatement();
+        if (statement != null) {
+            try {
+                String query = "SELECT * FROM Animals";
+                ResultSet resultSet = statement.executeQuery(query);
+
+                // Display animals in a simple message box for now
+                StringBuilder animalsList = new StringBuilder("Animals:\n");
+                while (resultSet.next()) {
+                    animalsList.append(resultSet.getString("name"))
+                               .append(" - ")
+                               .append(resultSet.getString("type"))
+                               .append("\n");
+                }
+                JOptionPane.showMessageDialog(null, animalsList.toString(), "Animals", JOptionPane.INFORMATION_MESSAGE);
+            } catch (SQLException e) {
+                throw new SQLException("Failed to load animals: " + e.getMessage());
             }
-        }
- 
-        if (selectedAnimal != null) {
-            new GameplayFrameGUI(selectedAnimal).setVisible(true);
         } else {
-            JOptionPane.showMessageDialog(null, "Pet not found.");
+            throw new SQLException("Database statement is null.");
         }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new MainMenuGui().setVisible(true);
+            }
+        });
+
+        // Add shutdown hook to properly close the database
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            public void run() {
+                DatabaseSetup.shutdownDatabase();
+            }
+        }));
     }
 }
+
